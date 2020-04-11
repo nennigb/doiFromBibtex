@@ -14,14 +14,15 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://gogs.supmeca.fr:3000/NENNIG/pademe",
-    packages=['doifrombibtex'],#setuptools.find_packages(), # we can use find_packages() to automatically discover all packages and subpackages
+    packages=['doifrombibtex'],
     package_data={'doifrombibtex': ['examples/*.bib']},
     install_requires=['bibtexparser',
-                      'crossrefapi'], # max version for python3.5
+                      'crossrefapi'],  # max version for python3.5
     classifiers=[
         "Programming Language :: Python :: 3.5",
         "License :: OSI Approved :: GPL 3",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.5', # tested with python 3.5 may works with previous py3 version...
+    # tested with python 3.5 may works with previous py3 version...
+    python_requires='>=3.5',
 )

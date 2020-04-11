@@ -21,6 +21,7 @@ TOL_MATCH = 0.8  # 80% of matching for title
 # max number of tested record in crossref api
 COUNT = 50
 
+
 def getDoiWithCrossRef(entry, my_etiquette):
     """ Get the doi of a bibtex entry thanks to crossref.
 
@@ -59,7 +60,7 @@ def getDoiWithCrossRef(entry, my_etiquette):
         author1 = entry_unicode['author'].split(',')[0].strip()
         title = entry_unicode['title'].strip()
         year = entry_unicode['year'].strip()
-    except:
+    except Exception:
         warnings.warn("author, title and year fields are missing in entry {}\
                       ".format(entry_unicode))
         doi = None
@@ -67,11 +68,11 @@ def getDoiWithCrossRef(entry, my_etiquette):
 
     w1 = works.query(author=author1,
                      bibliographic=title).filter(until_pub_date=year,
-                                        from_pub_date=year,
-                                        type='journal-article').sort('score').order('desc')
+                                                 from_pub_date=year,
+                                                 type='journal-article').sort('score').order('desc')
     # parse the crossref record to find the "best" match
     for item in w1:
-        count +=1
+        count += 1
         # fuzzy comprare
         ratio = SM(None, title, item['title'][0]).ratio()
         if ratio > TOL_MATCH:
@@ -86,8 +87,8 @@ for this record  {}'.format(COUNT, entry_unicode))
     if match:
         doi = item['DOI']
     else:
-        print("  MISSING : {}, {}".format( entry_unicode['author'],
-                                           entry_unicode['title']))
+        print("  MISSING : {}, {}".format(entry_unicode['author'],
+                                          entry_unicode['title']))
         doi = None
 
     return doi
@@ -95,14 +96,14 @@ for this record  {}'.format(COUNT, entry_unicode))
 
 def parse(bibdata, my_etiquette=None):
     """ Run the doi research.
-    
+
     Parameters
     ----------
     bibdata: BibDatabase
         The bibtex record with  missing doi.
     my_etiquette : tuple
         A record that contains all require fields to create Etiqette object.
-    
+
     Returns
     -------
     bibdata : BibDatabase
@@ -128,12 +129,13 @@ def parse(bibdata, my_etiquette=None):
             try:
                 entry['doi']
             # if no making a request on cross ref
-            except:
+            except Exception:
                 stats['doi_search'] += 1
                 doi = getDoiWithCrossRef(entry, my_etiquette)
                 if doi:
                     entry['doi'] = doi
-                    print('  FOUND :', entry['author'], entry['title'], entry['doi'])
+                    print('  FOUND :', entry['author'], entry['title'],
+                          entry['doi'])
                 else:
                     stats['doi_missing'] += 1
                     missing.append(entry['ID'])

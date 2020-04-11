@@ -1,43 +1,45 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-""" 
-This file is part of doiFromBibtex, An utility to parse bibtex files in order 
+"""
+This file is part of doiFromBibtex, An utility to parse bibtex files in order
 to recover the missing DOI.
 
 to get help:
-```  
+```
 python3 -m doifrombibtex -h
 ````
 or consult README file for basic examples.
 """
 
-import doctest
+
 import argparse
 import bibtexparser as bp
-from  doifrombibtex import *
+from doifrombibtex import parse
 import unittest
 
 # define path to example file
 EXAMPLE_FILE = 'examples/example.bib'
 
 
-
 class TestSuite(unittest.TestCase):
     """ Define test cases for unittest.
     """
+
     def test_example(self):
         """ Tests bib entries from examples.bib.
         """
         # open bibtex test file as string
         bibdata = bp.loads(pkgutil.get_data('doifrombibtex',
-                                           EXAMPLE_FILE), parser)
+                                            EXAMPLE_FILE), parser)
         # parse it
         bibdata_out, missing, stats = parse(bibdata)
         # check it
         entries = bibdata.entries_dict
-        self.assertEqual(entries['Cuyt:1985']['doi'], '10.1016/0377-0427(85)90019-6',
+        self.assertEqual(entries['Cuyt:1985']['doi'],
+                         '10.1016/0377-0427(85)90019-6',
                          'incorrect doi')
-        self.assertEqual(entries['Doppler:2016']['doi'], '10.1038/nature18605',
+        self.assertEqual(entries['Doppler:2016']['doi'],
+                         '10.1038/nature18605',
                          'incorrect doi')
 
 
@@ -79,7 +81,8 @@ if __name__ == '__main__':
         with open(args.input) as file:
             bibdata = bp.load(file, parser)
         # parse it
-        bibdata_out, missing, stats = parse(bibdata, my_etiquette=args.etiquette)
+        bibdata_out, missing, stats = parse(bibdata,
+                                            my_etiquette=args.etiquette)
         # export comleted bibtex file
         with open(args.output, 'w') as bibOutputFile:
             # dump
@@ -90,8 +93,7 @@ if __name__ == '__main__':
         unittest.main()
 
     # summary
-    print('\n> stats : {} still missing doi, {} doi searches, in {} bibtex entries'\
-          .format( stats['doi_missing'], stats['doi_search'], stats['entry']) )
+    print('\n> stats : {} still missing doi, {} doi searches, in {} bibtex entries'
+          .format(stats['doi_missing'], stats['doi_search'], stats['entry']))
     if missing:
         print('> it remains some missing doi :', missing)
-
