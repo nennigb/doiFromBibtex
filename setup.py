@@ -13,7 +13,7 @@ setuptools.setup(
     description="An utility to parse bibtex files in order to recover the missing DOI",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://gogs.supmeca.fr:3000/NENNIG/pademe",
+    url="https://github.com/nennigb/doiFromBibtex",
     packages=['doifrombibtex'],
     package_data={'doifrombibtex': ['examples/*.bib']},
     install_requires=['bibtexparser',
