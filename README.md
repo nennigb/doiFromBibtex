@@ -1,3 +1,5 @@
+![Python package](https://github.com/nennigb/doiFromBibtex/workflows/Python%20package/badge.svg)
+
 # DOI From Bibtex - An utility to parse bibtex files, in order to recover the missing DOI
 -----------------------------------------------------------------------------------------
 
