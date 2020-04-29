@@ -1,1 +1,2 @@
 include doifrombibtex/examples/examples.bib
+include bin/doifrombibtex

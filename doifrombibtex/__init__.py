@@ -10,9 +10,17 @@ doifrombibtex  -- An utility to parse bibtex files in order to recover the missi
 """
 
 import bibtexparser as bp
+from bibtexparser.bparser import BibTexParser
+
 from crossref.restful import Works, Etiquette
 from difflib import SequenceMatcher as SM
 import warnings
+import argparse
+import unittest
+
+
+__version__ = 0.9
+__url__= "https://github.com/nennigb/doiFromBibtex"
 
 # default options
 TOL_MATCH = 0.8  # 80% of matching for title
@@ -20,6 +28,11 @@ TOL_MATCH = 0.8  # 80% of matching for title
 # sleep = 0.05
 # max number of tested record in crossref api
 COUNT = 50
+# define path to example file
+EXAMPLE_FILE = 'examples/example.bib'
+# customize bibtextparser option
+parser = BibTexParser(common_strings=True)
+# parser.ignore_nonstandard_types = True
 
 
 def getDoiWithCrossRef(entry, my_etiquette):
@@ -141,3 +154,53 @@ def parse(bibdata, my_etiquette=None):
                     missing.append(entry['ID'])
 
     return bibdata, missing, stats
+
+
+def run():
+    """ Run parser, executed when the module is called.
+    """
+
+    # set output default name
+    out_default = 'out.bib'
+    my_etiquette = None   # setup it if you make intensive crossref request
+    # run command line options parser
+    inparser = argparse.ArgumentParser(description='An utility to parse bibtex files in order to recover the missing DOI.')
+    inparser.add_argument('input', help='input bibtex file name (None: run the tests)',
+                        nargs='?', default=None)
+    inparser.add_argument('output', help='output bibtex file name (default: ' + out_default + ')',
+                        nargs='?', default=out_default)
+    inparser.add_argument('--etiquette', help="Provide info on your projet to cross ref :\
+                        'My Project Name', 'My Project version', 'My Project URL', \
+                        'My contact email'", nargs='+', type=str, default=my_etiquette)
+    args = inparser.parse_args()
+    print("> Running parsing of {}.\n  The ouput will be written in {}\n".format(args.input, args.output))
+
+    # Etiquette parsing
+    if args.etiquette:
+        if len(args.etiquette) == 4:
+            print('> Your etiquette is : {}'.format(args.etiquette))
+        else:
+            raise ValueError('Etiquette must contains 4 strings. See the doc (-h option)')
+
+    # open inputbibfile as file
+    if args.input:
+        with open(args.input) as file:
+            bibdata = bp.load(file, parser)
+        # parse it
+        bibdata_out, missing, stats = parse(bibdata,
+                                            my_etiquette=args.etiquette)
+        # export comleted bibtex file
+        with open(args.output, 'w') as bibOutputFile:
+            # dump
+            bp.dump(bibdata_out, bibOutputFile)
+
+    else:
+        # run unittest test suite
+        print('> Running tests')
+        unittest.main()
+
+    # summary
+    print('\n> stats : {} still missing doi, {} doi searches, in {} bibtex entries'
+          .format(stats['doi_missing'], stats['doi_search'], stats['entry']))
+    if missing:
+        print('> it remains some missing doi :', missing)
